@@ -3,7 +3,6 @@ from bs4 import BeautifulSoup
 
 
 
-
 ##############FOR MACS THAT HAVE ERRORS LOOK HERE################
 ## https://timonweb.com/tutorials/fixing-certificate_verify_failed-error-when-trying-requests_html-out-on-mac/
 
@@ -12,15 +11,39 @@ from bs4 import BeautifulSoup
 ##  > sudo "./Install Certificates.command"
 
 
-url = 'https://www.tradingview.com/markets/stocks-usa/market-movers-gainers/'
+url = 'https://www.webull.com/quote/us/gainers'
 headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.3'}
 
-		
+req = Request(url, headers=headers)
+webpage = urlopen(req).read()
+soup = BeautifulSoup(webpage, 'html.parser')
+print(soup.title.text)
 
+table_rows = soup.findAll("div", attrs={"class": "table-cell"})
 
+#print(stock_data[1].text)      #this says the name instead a bunch of garbled information
+#print(stock_data[3].text)
+#print(stock_data[4].text)
 
+#print(stock_data[12].text)      #this is not a list so we have to count to the end of the table and add it on
+#print(stock_data[23].text)
 
+counter = 1
+for row in table_rows[:5]:
+    
+    name = table_rows[counter].text
+    change = float(table_rows[counter+2].text.strip('+').strip('%'))
+    last_price = float(table_rows[counter+3].text)
+    previous_price = round(last_price / (1 + change/100),2)
 
+    print()
+    print(f'Company Name: {name}')
+    print(f"Change: {change}")
+    print(f"Price: {last_price}")
+    print(f"Previous Prive: {previous_price}")
+    print()
+
+    counter += 11         #this will take it to the beginning of the next row
 
 #SOME USEFUL FUNCTIONS IN BEAUTIFULSOUP
 #-----------------------------------------------#
